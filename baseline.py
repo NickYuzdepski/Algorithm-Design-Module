@@ -60,3 +60,19 @@ def copy_adj(adj: list[list[int]]):
     for u in adj:
         new_adj.append(u[:])
     return new_adj
+
+
+def count_edges(adj: list[list[int]]):
+    """Count the number of edges in the provided adjacency list.
+
+    Args:
+        adj: The adjacency list representation of a graph.
+    
+    Returns:
+        The number of edges in the graph.
+    """
+    count = 0
+    for u in adj:
+        count += len(u)
+    # Each edge is counted twice in an undirected graph
+    return count // 2
