@@ -13,7 +13,7 @@ def bfs_distances(adj: list[list[int]], s: int):
 
     Returns:
         A list of distances where each distance corresponds to the vertex u in
-        the adjacency list.
+        the provided adjacency list.
     """
     visited = []
     distances = []
@@ -45,3 +45,18 @@ def bfs_distances(adj: list[list[int]], s: int):
                 d.append(v)
 
     return distances
+
+
+def copy_adj(adj: list[list[int]]):
+    """Create a copy of the provided adjacency list.
+
+    Args:
+        adj: The adjacency list representation of a graph.
+
+    Returns:
+        A copy of the adjacency list.
+    """
+    new_adj = []
+    for u in adj:
+        new_adj.append(u[:])
+    return new_adj
