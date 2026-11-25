@@ -90,46 +90,76 @@ def refine_maze(adj: list[list[int]]):
         distance from u to v in R is at most two units longer than the
         distance from u to v in M.
     """
-    # Create a copy of the adjacency list to work with
+    # Create copies of the adjacency list to work with
     new_adj = copy_adj(adj)
-    candidate_adj = new_adj
+    best_adj = copy_adj(adj)
 
     # Count the number of edges in the original adjacency list and initialize
     # the best edge count to this value
-    edge_count = count_edges(adj)
-    best_edge_count = edge_count
+    initial_edges = count_edges(adj)
+    best_edge_count = initial_edges
 
+    # Calculate the distances in the original maze for all pairs of vertices
+    orig_all_distances = []
+    for u in range(len(adj)):
+        orig_all_distances.append(bfs_distances(adj, u))
+
+    # Create a list of edges from the original adjacency list
+    edges = []
     for u, neighbors in enumerate(adj):
-        for v in neighbors[:]:
-            # Remove the edge (u, v) from the new adjacency list if it exists
-            if v in new_adj[u]:
-                new_adj[u].remove(v)
-            if u in new_adj[v]:
-                new_adj[v].remove(u)
-            current_edge_count = edge_count - 1
+        for v in neighbors:
+            if u < v:
+                edges.append((u, v))
 
-            # Calculate the distances from u to all other vertices in both the
-            # original and new adjacency lists
-            old_distances = bfs_distances(adj, u)
+    def is_valid() -> bool:
+        """Check if the distance constraint is satisfied for all pairs of
+        vertices.
+
+        Returns:
+            True if the distance constraint is satisfied, False otherwise.
+        """
+        for u in range(len(adj)):
             new_distances = bfs_distances(new_adj, u)
+            for v in range(len(adj)):
+                if new_distances[v] > orig_all_distances[u][v] + 2:
+                    return False
+        return True
 
-            # Check if the distance constraint is satisfied for all vertices
-            constraint_satisfied = True
-            for d in old_distances:
-                if new_distances[d] > old_distances[d] + 2:
-                    # If the distance constraint is violated, restore the edge
-                    # (u, v) and break out of the loop
-                    constraint_satisfied = False
-                    new_adj[u].append(v)
-                    new_adj[v].append(u)
-                    current_edge_count += 1
-                    break
+    def backtrack(idx: int, current_edge_count: int):
+        """Backtrack through the edges to find a refined maze with the minimum
+        number of edges.
 
-            # If the distance constraint is satisfied and the current edge
-            # count is less than the best edge count, update the best edge
-            # count and the candidate adjacency list
-            if constraint_satisfied and current_edge_count < best_edge_count:
+        Args:
+            idx: The current index in the edges list.
+            current_edge_count: The current number of edges in the new
+            adjacency list.
+        """
+        nonlocal best_edge_count, best_adj
+
+        # If we have considered all edges, update the best edge count and
+        # adjacency list if necessary
+        if idx == len(edges):
+            if current_edge_count < best_edge_count:
                 best_edge_count = current_edge_count
-                candidate_adj = new_adj
+                best_adj = copy_adj(new_adj)
+            return
 
-    return candidate_adj
+        u, v = edges[idx]
+
+        # Try removing the edge (u, v) from the new adjacency list
+        new_adj[u].remove(v)
+        new_adj[v].remove(u)
+
+        # Check if the distance constraint is satisfied after removing the edge
+        if is_valid():
+            backtrack(idx + 1, current_edge_count - 1)
+
+        # Restore the edge (u, v) in the new adjacency list
+        new_adj[u].append(v)
+        new_adj[v].append(u)
+
+        backtrack(idx + 1, current_edge_count)
+
+    backtrack(0, initial_edges)
+
+    return best_adj
