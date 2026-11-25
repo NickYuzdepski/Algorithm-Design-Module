@@ -158,8 +158,10 @@ def refine_maze(adj: list[list[int]]):
         new_adj[u].append(v)
         new_adj[v].append(u)
 
+        # Try keeping the edge (u, v) in the new adjacency list
         backtrack(idx + 1, current_edge_count)
 
+    # Start the backtracking process with the initial edge count
     backtrack(0, initial_edges)
 
     return best_adj
