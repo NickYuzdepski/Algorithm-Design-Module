@@ -5,7 +5,8 @@ adj = [[3], [4], [5], [0, 4, 6], [1, 3, 5, 7], [2, 4], [3, 7], [4, 6, 8], [7]]
 
 
 def bfs_distances(adj: list[list[int]], s: int):
-    """Calculate the distances from the start vertex to every other vertex.
+    """Calculate the shortest-path distances from the start vertex to every 
+    other vertex.
 
     Args:
         adj: The adjacency list representation of a graph.
@@ -48,7 +49,7 @@ def bfs_distances(adj: list[list[int]], s: int):
 
 
 def copy_adj(adj: list[list[int]]):
-    """Create a copy of the provided adjacency list.
+    """Create a deep copy of the provided adjacency list.
 
     Args:
         adj: The adjacency list representation of a graph.
