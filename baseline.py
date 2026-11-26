@@ -92,7 +92,7 @@ def refine_maze(adj: list[list[int]]):
         distance from u to v in M.
     """
     # Create copies of the adjacency list to work with
-    new_adj = copy_adj(adj)
+    current_adj = copy_adj(adj)
     best_adj = copy_adj(adj)
 
     # Count the number of edges in the original adjacency list and initialize
@@ -120,7 +120,7 @@ def refine_maze(adj: list[list[int]]):
             True if the distance constraint is satisfied, False otherwise.
         """
         for u in range(len(adj)):
-            new_distances = bfs_distances(new_adj, u)
+            new_distances = bfs_distances(current_adj, u)
             for v in range(len(adj)):
                 if new_distances[v] > orig_all_distances[u][v] + 2:
                     return False
@@ -142,22 +142,22 @@ def refine_maze(adj: list[list[int]]):
         if idx == len(edges):
             if current_edge_count < best_edge_count:
                 best_edge_count = current_edge_count
-                best_adj = copy_adj(new_adj)
+                best_adj = copy_adj(current_adj)
             return
 
         u, v = edges[idx]
 
         # Try removing the edge (u, v) from the new adjacency list
-        new_adj[u].remove(v)
-        new_adj[v].remove(u)
+        current_adj[u].remove(v)
+        current_adj[v].remove(u)
 
         # Check if the distance constraint is satisfied after removing the edge
         if is_valid():
             backtrack(idx + 1, current_edge_count - 1)
 
         # Restore the edge (u, v) in the new adjacency list
-        new_adj[u].append(v)
-        new_adj[v].append(u)
+        current_adj[u].append(v)
+        current_adj[v].append(u)
 
         # Try keeping the edge (u, v) in the new adjacency list
         backtrack(idx + 1, current_edge_count)
