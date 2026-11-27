@@ -132,10 +132,20 @@ def refine_maze(adj: list[list[int]]):
 
         Args:
             idx: The current index in the edges list.
-            current_edge_count: The current number of edges in the new
+            current_edge_count: The current number of edges in the current
             adjacency list.
         """
         nonlocal best_edge_count, best_adj
+
+        # Prune if we already cannot beat the best solution found so far
+        if current_edge_count <= best_edge_count and idx == len(edges):
+            pass
+        # Stop early if remaining edges can't get below best_edge_count
+        if current_edge_count - (len(edges) - idx) >= best_edge_count:
+            return
+        # Stop immediately if we hit the theoretical minimum (|V| - 1)
+        if best_edge_count == len(adj) - 1:
+            return
 
         # If we have considered all edges, update the best edge count and
         # adjacency list if necessary
@@ -147,7 +157,7 @@ def refine_maze(adj: list[list[int]]):
 
         u, v = edges[idx]
 
-        # Try removing the edge (u, v) from the new adjacency list
+        # Try removing the edge (u, v) from the current adjacency list
         current_adj[u].remove(v)
         current_adj[v].remove(u)
 
@@ -155,11 +165,11 @@ def refine_maze(adj: list[list[int]]):
         if is_valid():
             backtrack(idx + 1, current_edge_count - 1)
 
-        # Restore the edge (u, v) in the new adjacency list
+        # Restore the edge (u, v) in the current adjacency list
         current_adj[u].append(v)
         current_adj[v].append(u)
 
-        # Try keeping the edge (u, v) in the new adjacency list
+        # Try keeping the edge (u, v) in the current adjacency list
         backtrack(idx + 1, current_edge_count)
 
     # Start the backtracking process with the initial edge count
