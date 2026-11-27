@@ -137,9 +137,6 @@ def refine_maze(adj: list[list[int]]):
         """
         nonlocal best_edge_count, best_adj
 
-        # Prune if we already cannot beat the best solution found so far
-        if current_edge_count <= best_edge_count and idx == len(edges):
-            pass
         # Stop early if remaining edges can't get below best_edge_count
         if current_edge_count - (len(edges) - idx) >= best_edge_count:
             return
